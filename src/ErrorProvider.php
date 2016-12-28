@@ -16,6 +16,8 @@ class ErrorProvider extends ServiceProvider {
 	public $defer = true;
 
 	public function boot() {
+		//定义错误/异常处理
+		\Error::bootstrap();
 	}
 
 	public function register() {
