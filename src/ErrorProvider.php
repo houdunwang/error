@@ -9,20 +9,19 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\error;
 
-use hdphp\kernel\ServiceProvider;
+use houdunwang\framework\build\Provider;
 
-class ErrorProvider extends ServiceProvider {
+class ErrorProvider extends Provider {
 	//延迟加载
-	public $defer = true;
+	public $defer = false;
 
 	public function boot() {
-		//定义错误/异常处理
-		\Error::bootstrap();
+		Error::bootstrap();
 	}
 
 	public function register() {
-		$this->app->single( 'Error', function ( $app ) {
-			return new Error( $app );
+		$this->app->single( 'Error', function () {
+			return Error::single();
 		} );
 	}
 }

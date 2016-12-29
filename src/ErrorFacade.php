@@ -9,9 +9,9 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\error;
 
-use hdphp\kernel\ServiceFacade;
+use houdunwang\framework\build\Facade;
 
-class ErrorFacade extends ServiceFacade {
+class ErrorFacade extends Facade {
 	public static function getFacadeAccessor() {
 		return 'Error';
 	}

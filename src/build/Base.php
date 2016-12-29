@@ -12,7 +12,6 @@ namespace houdunwang\error\build;
 //错误处理
 use houdunwang\config\Config;
 use houdunwang\log\Log;
-use houdunwang\view\View;
 
 class Base {
 	//关闭DEBUG时的错误显示页面
@@ -20,8 +19,8 @@ class Base {
 
 	//启动
 	public function bootstrap() {
-		$this->bug = realpath( c( 'error.bug' ) );
 		error_reporting( 0 );
+		$this->bug = realpath( Config::get( 'error.bug' ) );
 		set_error_handler( [ $this, 'error' ], E_ALL );
 		set_exception_handler( [ $this, 'exception' ] );
 		register_shutdown_function( [ $this, 'fatalError' ] );
@@ -49,14 +48,14 @@ class Base {
 		Log::write( $msg, $this->errorType( $errno ) );
 		//命令行错误
 		if ( PHP_SAPI == 'cli' ) {
-			die( PHP_EOL . "\033[;36m $msg \x1B[0m\n" . PHP_EOL );;
+			die( PHP_EOL . "\033[;36m $msg \x1B[0m\n" . PHP_EOL );
 		} else {
 			switch ( $errno ) {
 				case E_USER_NOTICE:
 				case E_DEPRECATED:
 					break;
 				case E_NOTICE:
-					if ( c( 'error.debug' ) === true && c('error.show_notice')) {
+					if ( c( 'error.debug' ) === true && c( 'error.show_notice' ) ) {
 						require __DIR__ . '/../view/notice.php';
 					}
 					break;
