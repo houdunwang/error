@@ -31,7 +31,7 @@ class Base {
 		Log::write( $e->getMessage(), 'EXCEPTION' );
 		//命令行错误
 		if ( PHP_SAPI == 'cli' ) {
-			die( PHP_EOL . "\033[;36m $e->getMessage() \x1B[0m\n" . PHP_EOL );;
+			die( PHP_EOL . "\033[;36m " . $e->getMessage() . "\x1B[0m\n" . PHP_EOL );;
 		} else {
 			if ( Config::get( 'error.debug' ) === true ) {
 				require __DIR__ . '/../view/exception.php';

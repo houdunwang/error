@@ -13,15 +13,14 @@ use houdunwang\framework\build\Provider;
 
 class ErrorProvider extends Provider {
 	//延迟加载
-	public $defer = false;
+	public $defer = true;
 
 	public function boot() {
-		Error::bootstrap();
 	}
 
 	public function register() {
 		$this->app->single( 'Error', function () {
-			return Error::single();
+			return new Error();
 		} );
 	}
 }
