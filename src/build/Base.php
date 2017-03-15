@@ -46,28 +46,30 @@ class Base {
 	public function error( $errno, $error, $file, $line ) {
 		$msg = $error . "($errno)" . $file . " ($line).";
 		//命令行错误
-		if ( PHP_SAPI == 'cli' ) {
-			die( PHP_EOL . "\033[;36m $msg \x1B[0m\n" . PHP_EOL );
-		} else {
-			switch ( $errno ) {
-				case E_USER_NOTICE:
-				case E_DEPRECATED:
-					break;
-				case E_NOTICE:
-					if ( c( 'error.debug' ) === true && c( 'error.show_notice' ) ) {
-						require __DIR__ . '/../view/notice.php';
-					}
-					break;
-				default:
-					Log::write( $msg, $this->errorType( $errno ) );
-					if ( c( 'error.debug' ) === true ) {
-						require __DIR__ . '/../view/debug.php';
-					} else {
-						require $this->bug;
-					}
-					exit;
-			}
+		switch ( $errno ) {
+			case LOG_CRIT:
+			case E_USER_NOTICE:
+			case E_DEPRECATED:
+				break;
+			case E_NOTICE:
+				if ( PHP_SAPI != 'cli' && c( 'error.debug' ) === true && c( 'error.show_notice' ) ) {
+					require __DIR__ . '/../view/notice.php';
+				}
+				break;
+			default:
+				//命令行错误处理
+				if ( PHP_SAPI == 'cli' ) {
+					die( PHP_EOL . "\033[;36m $msg \x1B[0m\n" . PHP_EOL );
+				}
+				Log::write( $msg, $this->errorType( $errno ) );
+				if ( c( 'error.debug' ) === true ) {
+					require __DIR__ . '/../view/debug.php';
+				} else {
+					require $this->bug;
+				}
+				exit;
 		}
+
 	}
 
 	//致命错误处理
