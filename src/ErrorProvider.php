@@ -17,7 +17,7 @@ class ErrorProvider extends Provider {
 
 	public function boot() {
 		Config::set( 'error.debug', Config::get( 'app.debug' ) );
-		\Error::bootstrap();
+		Error::bootstrap();
 	}
 
 	public function register() {
