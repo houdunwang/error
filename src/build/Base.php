@@ -76,11 +76,10 @@ class Base {
 	public function fatalError() {
 		if ( function_exists( 'error_get_last' ) ) {
 			if ( $e = error_get_last() ) {
-				$errno = $this->errorType( $e['type'] );
 				$error = $e['message'];
 				$file  = $e['file'];
 				$line  = $e['line'];
-				$this->error( $errno, $error, $file, $line );
+				$this->error( $e['type'], $error, $file, $line );
 				exit;
 			}
 		}
