@@ -33,7 +33,7 @@ class Base
     public function exception($e)
     {
         //命令行错误
-        if (PHP_SAPI == 'cli') {
+        if (RUN_MODE == 'CLI') {
             die(PHP_EOL."\033[;36m ".$e->getMessage()."\x1B[0m\n".PHP_EOL);;
         } else {
             if (Config::get('app.debug') == true) {
@@ -55,22 +55,21 @@ class Base
             case E_DEPRECATED:
                 break;
             case E_NOTICE:
-                if (PHP_SAPI != 'cli' && c('app.debug') == true
+                if (RUN_MODE == 'HTTP' && c('app.debug') == true
                     && c('error.show_notice')
                 ) {
                     require __DIR__.'/../view/notice.php';
                 }
                 break;
             case E_WARNING:
-
-                if (PHP_SAPI != 'cli' && c('app.debug') == true) {
+                if (RUN_MODE == 'HTTP' && c('app.debug') == true) {
                     require __DIR__.'/../view/debug.php';
                     exit;
                 }
                 break;
             default:
                 //命令行错误处理
-                if (PHP_SAPI == 'cli') {
+                if (RUN_MODE == 'CLI') {
                     die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
                 }
                 if (c('app.debug') == true) {
