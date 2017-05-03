@@ -10,10 +10,15 @@
 
 namespace houdunwang\error\build;
 
-//错误处理
 use houdunwang\config\Config;
 use houdunwang\log\Log;
 
+/**
+ * 错误处理
+ * Class Base
+ *
+ * @package houdunwang\error\build
+ */
 class Base
 {
     //关闭DEBUG时的错误显示页面
@@ -33,7 +38,7 @@ class Base
     public function exception($e)
     {
         //命令行错误
-        if (RUN_MODE == 'CLI') {
+        if (PHP_SAPI == 'cli') {
             die(PHP_EOL."\033[;36m ".$e->getMessage()."\x1B[0m\n".PHP_EOL);;
         } else {
             if (Config::get('app.debug') == true) {
@@ -55,27 +60,33 @@ class Base
             case E_DEPRECATED:
                 break;
             case E_NOTICE:
-                if (RUN_MODE == 'HTTP' && c('app.debug') == true
-                    && c('error.show_notice')
+                if (
+                    PHP_SAPI != 'cli'
+                    && Config::get('app.debug') == true
+                    && Config::get('error.show_notice')
                 ) {
                     require __DIR__.'/../view/notice.php';
                 }
                 break;
             case E_WARNING:
-                if (RUN_MODE == 'HTTP' && c('app.debug') == true) {
-                    require __DIR__.'/../view/debug.php';
-                    exit;
-                }
-                break;
-            default:
                 //命令行错误处理
-                if (RUN_MODE == 'CLI') {
+                if (PHP_SAPI == 'cli') {
                     die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
                 }
-                if (c('app.debug') == true) {
+                if (Config::get('app.debug') == true) {
+                    require __DIR__.'/../view/debug.php';
+                }
+                exit;
+            default:
+                //命令行错误处理
+                if (PHP_SAPI == 'cli') {
+                    die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
+                }
+                if (Config::get('app.debug') == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
                     Log::write($msg, $this->errorType($errno));
+                    require $this->bug;
                 }
                 exit;
         }

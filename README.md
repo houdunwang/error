@@ -12,19 +12,19 @@
 ```
 composer require houdunwang/error
 ```
-> HDPHP 框架已经内置此组件，无需要安装
 
 ####配置
 ```
+Config::set('log.dir', 'storage/log');
+//开启时直接显示错误信息
+Config::set('app.debug', true);
 $config = [
-	//开启时直接显示错误信息
-	'debug'       => true,
-	//Notice类型错误显示
-	'show_notice' => true,
-	//错误提示页面
-	'bug'         => 'resource/bug.php',
+    //Notice类型错误显示
+    'show_notice' => true,
+    //错误提示页面
+    'bug'         => 'resource/bug.php',
 ];
-\houdunwang\config\Config::set( 'error', $config );
+Config::set('error', $config);
 ```
 
 ####启动
