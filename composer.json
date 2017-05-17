@@ -1,7 +1,6 @@
 {
   "name": "houdunwang/error",
   "description": "错误与异常处理",
-  "type": "project",
   "keywords": [
     "houdunwang",
     "hdphp",
