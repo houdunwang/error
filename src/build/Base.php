@@ -32,7 +32,9 @@ class Base
         $this->showNotice = Config::get('error.show_notice');
     }
 
-    //启动
+    /**
+     * 启动处理
+     */
     public function bootstrap()
     {
         error_reporting(0);
@@ -49,10 +51,9 @@ class Base
         if (PHP_SAPI == 'cli') {
             die(PHP_EOL."\033[;36m ".$e->getMessage()."\x1B[0m\n".PHP_EOL);;
         } else {
+            Log::write($e->getMessage()." FILE:".$e->getFile().'('.$e->getLine().')', 'EXCEPTION');
             if (Config::get('app.debug') == true) {
                 require __DIR__.'/../view/exception.php';
-            } else {
-                Log::write($e->getMessage(), 'EXCEPTION');
             }
         }
         exit;
@@ -77,6 +78,7 @@ class Base
                 if (PHP_SAPI == 'cli') {
                     die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
                 }
+                Log::write($msg, $this->errorType($errno));
                 if ($this->debug == true) {
                     require __DIR__.'/../view/debug.php';
                 }
@@ -86,10 +88,10 @@ class Base
                 if (PHP_SAPI == 'cli') {
                     die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
                 }
+                Log::write($msg, $this->errorType($errno));
                 if ($this->debug == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
-                    Log::write($msg, $this->errorType($errno));
                     require $this->bug;
                 }
                 exit;
@@ -102,11 +104,7 @@ class Base
     {
         if (function_exists('error_get_last')) {
             if ($e = error_get_last()) {
-                $error = $e['message'];
-                $file  = $e['file'];
-                $line  = $e['line'];
-                $this->error($e['type'], $error, $file, $line);
-                exit;
+                require __DIR__.'/../view/fatal.php';die;
             }
         }
     }
@@ -166,12 +164,8 @@ class Base
      *
      * @return void|array
      */
-    public function trace(
-        $value = '[hdphp]',
-        $label = '',
-        $level = 'DEBUG',
-        $record = false
-    ) {
+    public function trace($value = '[hdphp]', $label = '', $level = 'DEBUG', $record = false)
+    {
         static $trace = [];
 
         if ('[hdphp]' == $value) {

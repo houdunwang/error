@@ -66,9 +66,9 @@
 		:(
 	</div>
 	<div class="msg">
-		<?php echo $error; ?>
+		<?php echo $e['message']; ?>
 		<p style="font-size: 14px;margin: 15px 0;color:#999;">
-			Severity: <?php echo $this->errorType( $errno ); ?>
+			Severity: fatalError
 		</p>
 	</div>
 	<div class="info">
@@ -76,7 +76,7 @@
 			File:
 		</div>
 		<div class="path">
-			<?php echo 'File:' . $file . '  Line:' . $line; ?>
+			<?php echo 'File:' . $e['file'] . '  Line:' . $e['line']; ?>
 		</div>
 	</div>
 	<div class="info">

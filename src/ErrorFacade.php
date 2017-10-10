@@ -7,12 +7,15 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.houdunwang.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
+
 namespace houdunwang\error;
 
 use houdunwang\framework\build\Facade;
 
-class ErrorFacade extends Facade {
-	public static function getFacadeAccessor() {
-		return 'Error';
-	}
+class ErrorFacade extends Facade
+{
+    public static function getFacadeAccessor()
+    {
+        return 'Error';
+    }
 }

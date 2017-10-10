@@ -7,38 +7,32 @@
  * |    WeChat: aihoudun
  * | Copyright (c) 2012-2019, www.houdunwang.com. All Rights Reserved.
  * '-------------------------------------------------------------------*/
+
 namespace houdunwang\error;
 
 //错误处理
 use houdunwang\error\build\Base;
 
-class Error {
-	protected $link;
+class Error
+{
+    protected static $link;
 
-	protected function driver() {
-		$this->link = new Base();
+    protected static function single()
+    {
+        if ( ! self::$link) {
+            self::$link = new Base();
+        }
 
-		return $this;
-	}
+        return self::$link;
+    }
 
-	public function __call( $method, $params ) {
-		if ( is_null( $this->link ) ) {
-			$this->driver();
-		}
+    public function __call($method, $params)
+    {
+        return call_user_func_array([self::single(), $method], $params);
+    }
 
-		return call_user_func_array( [ $this->link, $method ], $params );
-	}
-
-	public static function single() {
-		static $link;
-		if ( is_null( $link ) ) {
-			$link = new static();
-		}
-
-		return $link;
-	}
-
-	public static function __callStatic( $name, $arguments ) {
-		return call_user_func_array( [ static::single(), $name ], $arguments );
-	}
+    public static function __callStatic($name, $arguments)
+    {
+        return call_user_func_array([static::single(), $name], $arguments);
+    }
 }
