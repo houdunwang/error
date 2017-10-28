@@ -12,6 +12,7 @@ namespace houdunwang\error\build;
 
 use houdunwang\config\Config;
 use houdunwang\log\Log;
+use houdunwang\request\Request;
 
 /**
  * 错误处理
@@ -44,7 +45,11 @@ class Base
         register_shutdown_function([$this, 'fatalError']);
     }
 
-    //自定义异常理
+    /**
+     * 自定义异常理
+     *
+     * @param $e
+     */
     public function exception($e)
     {
         //命令行错误
@@ -54,12 +59,34 @@ class Base
             Log::write($e->getMessage()." FILE:".$e->getFile().'('.$e->getLine().')', 'EXCEPTION');
             if (Config::get('app.debug') == true) {
                 require __DIR__.'/../view/exception.php';
+            } else {
+                $this->closeDebugShowError();
             }
         }
         exit;
     }
 
-    //错误处理
+    /**
+     * 关闭调试模式时显示错误
+     */
+    protected function closeDebugShowError()
+    {
+        if (Request::isAjax()) {
+            echo Response::ajax(['message' => '系统错误，请稍候访问', 'valid' => 0]);
+        } else {
+            require Config::get('error.bug');
+        }
+        die;
+    }
+
+    /**
+     * 错误处理
+     *
+     * @param $errno
+     * @param $error
+     * @param $file
+     * @param $line
+     */
     public function error($errno, $error, $file, $line)
     {
         $msg = $error."($errno)".$file." ($line).";
@@ -81,6 +108,8 @@ class Base
                 Log::write($msg, $this->errorType($errno));
                 if ($this->debug == true) {
                     require __DIR__.'/../view/debug.php';
+                } else {
+                    $this->closeDebugShowError();
                 }
                 exit;
             default:
@@ -92,7 +121,7 @@ class Base
                 if ($this->debug == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
-                    require $this->bug;
+                    $this->closeDebugShowError();
                 }
                 exit;
         }
@@ -104,7 +133,8 @@ class Base
     {
         if (function_exists('error_get_last')) {
             if ($e = error_get_last()) {
-                require __DIR__.'/../view/fatal.php';die;
+                require __DIR__.'/../view/fatal.php';
+                die;
             }
         }
     }
