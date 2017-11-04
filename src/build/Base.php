@@ -60,7 +60,7 @@ class Base
             if (Config::get('app.debug') == true) {
                 require __DIR__.'/../view/exception.php';
             } else {
-                $this->closeDebugShowError();
+                $this->closeDebugShowError($e->getMessage());
             }
         }
         exit;
@@ -68,11 +68,12 @@ class Base
 
     /**
      * 关闭调试模式时显示错误
+     * @param string $msg
      */
-    protected function closeDebugShowError()
+    protected function closeDebugShowError($msg='系统错误，请稍候访问')
     {
         if (Request::isAjax()) {
-            echo Response::ajax(['message' => '系统错误，请稍候访问', 'valid' => 0]);
+            echo Response::ajax(['message' => $msg, 'valid' => 0]);
         } else {
             require Config::get('error.bug');
         }
@@ -109,7 +110,7 @@ class Base
                 if ($this->debug == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
-                    $this->closeDebugShowError();
+                    $this->closeDebugShowError($error);
                 }
                 exit;
             default:
@@ -121,7 +122,7 @@ class Base
                 if ($this->debug == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
-                    $this->closeDebugShowError();
+                    $this->closeDebugShowError($error);
                 }
                 exit;
         }
