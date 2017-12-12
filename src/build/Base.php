@@ -24,14 +24,6 @@ class Base
 {
     //关闭DEBUG时的错误显示页面
     protected $bug;
-    protected $debug;
-    protected $showNotice;
-
-    public function __construct()
-    {
-        $this->debug      = Config::get('app.debug');
-        $this->showNotice = Config::get('error.show_notice');
-    }
 
     /**
      * 启动处理
@@ -97,7 +89,7 @@ class Base
             case E_DEPRECATED:
                 break;
             case E_NOTICE:
-                if (PHP_SAPI != 'cli' && $this->debug == true && $this->showNotice) {
+                if (PHP_SAPI != 'cli' && Config::get('app.debug') == true && Config::get('error.show_notice')) {
                     require __DIR__.'/../view/notice.php';
                 }
                 break;
@@ -107,7 +99,7 @@ class Base
                     die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
                 }
                 Log::write($msg, $this->errorType($errno));
-                if ($this->debug == true) {
+                if (Config::get('app.debug') == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
                     $this->closeDebugShowError($error);
@@ -119,7 +111,7 @@ class Base
                     die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
                 }
                 Log::write($msg, $this->errorType($errno));
-                if ($this->debug == true) {
+                if (Config::get('app.debug') == true) {
                     require __DIR__.'/../view/debug.php';
                 } else {
                     $this->closeDebugShowError($error);
