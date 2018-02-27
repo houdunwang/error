@@ -13,6 +13,7 @@ namespace houdunwang\error\build;
 use houdunwang\config\Config;
 use houdunwang\log\Log;
 use houdunwang\request\Request;
+use houdunwang\response\Response;
 
 /**
  * 错误处理
@@ -46,11 +47,12 @@ class Base
     {
         //命令行错误
         if (PHP_SAPI == 'cli') {
-            die(PHP_EOL."\033[;36m ".$e->getMessage()."\x1B[0m\n".PHP_EOL);;
+            die(PHP_EOL . "\033[;36m " . $e->getMessage() . "\x1B[0m\n" . PHP_EOL);;
         } else {
-            Log::write($e->getMessage()." FILE:".$e->getFile().'('.$e->getLine().')', 'EXCEPTION');
+            Log::write($e->getMessage() . " FILE:" . $e->getFile() . '(' . $e->getLine() . ')',
+                'EXCEPTION');
             if (Config::get('app.debug') == true) {
-                require __DIR__.'/../view/exception.php';
+                require __DIR__ . '/../view/exception.php';
             } else {
                 $this->closeDebugShowError($e->getMessage());
             }
@@ -60,9 +62,10 @@ class Base
 
     /**
      * 关闭调试模式时显示错误
+     *
      * @param string $msg
      */
-    protected function closeDebugShowError($msg='系统错误，请稍候访问')
+    protected function closeDebugShowError($msg = '系统错误，请稍候访问')
     {
         if (Request::isAjax()) {
             echo Response::ajax(['message' => $msg, 'valid' => 0]);
@@ -82,25 +85,26 @@ class Base
      */
     public function error($errno, $error, $file, $line)
     {
-        $msg = $error."($errno)".$file." ($line).";
+        $msg = $error . "($errno)" . $file . " ($line).";
         //命令行错误
         switch ($errno) {
             case E_USER_NOTICE:
             case E_DEPRECATED:
                 break;
             case E_NOTICE:
-                if (PHP_SAPI != 'cli' && Config::get('app.debug') == true && Config::get('error.show_notice')) {
-                    require __DIR__.'/../view/notice.php';
+                if (PHP_SAPI != 'cli' && Config::get('app.debug') == true
+                    && Config::get('error.show_notice')) {
+                    require __DIR__ . '/../view/notice.php';
                 }
                 break;
             case E_WARNING:
                 //命令行错误处理
                 if (PHP_SAPI == 'cli') {
-                    die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
+                    die(PHP_EOL . "\033[;36m $msg \x1B[0m\n" . PHP_EOL);
                 }
                 Log::write($msg, $this->errorType($errno));
                 if (Config::get('app.debug') == true) {
-                    require __DIR__.'/../view/debug.php';
+                    require __DIR__ . '/../view/debug.php';
                 } else {
                     $this->closeDebugShowError($error);
                 }
@@ -108,11 +112,11 @@ class Base
             default:
                 //命令行错误处理
                 if (PHP_SAPI == 'cli') {
-                    die(PHP_EOL."\033[;36m $msg \x1B[0m\n".PHP_EOL);
+                    die(PHP_EOL . "\033[;36m $msg \x1B[0m\n" . PHP_EOL);
                 }
                 Log::write($msg, $this->errorType($errno));
                 if (Config::get('app.debug') == true) {
-                    require __DIR__.'/../view/debug.php';
+                    require __DIR__ . '/../view/debug.php';
                 } else {
                     $this->closeDebugShowError($error);
                 }
@@ -121,12 +125,14 @@ class Base
 
     }
 
-    //致命错误处理
+    /**
+     * 致命错误处理
+     */
     public function fatalError()
     {
         if (function_exists('error_get_last')) {
             if ($e = error_get_last()) {
-                require __DIR__.'/../view/fatal.php';
+                require __DIR__ . '/../view/fatal.php';
                 die;
             }
         }
@@ -195,7 +201,7 @@ class Base
             // 获取trace信息
             return $trace;
         } else {
-            $info  = ($label ? $label.':' : '').print_r($value, true);
+            $info  = ($label ? $label . ':' : '') . print_r($value, true);
             $level = strtoupper($level);
             if (IS_AJAX || $record) {
                 Log::record($info, $level, $record);
